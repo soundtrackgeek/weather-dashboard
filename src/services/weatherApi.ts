@@ -17,6 +17,26 @@ export interface WeatherData {
   name: string;
 }
 
+export interface ForecastData {
+  list: Array<{
+    dt: number;
+    main: {
+      temp: number;
+      humidity: number;
+      feels_like: number;
+    };
+    weather: Array<{
+      main: string;
+      description: string;
+      icon: string;
+    }>;
+    dt_txt: string;
+  }>;
+  city: {
+    name: string;
+  };
+}
+
 export const getWeather = async (city: string): Promise<WeatherData> => {
   const response = await axios.get(
     `${BASE_URL}/weather?q=${city}&units=metric&appid=${API_KEY}`
@@ -24,7 +44,7 @@ export const getWeather = async (city: string): Promise<WeatherData> => {
   return response.data;
 };
 
-export const getForecast = async (city: string) => {
+export const getForecast = async (city: string): Promise<ForecastData> => {
   const response = await axios.get(
     `${BASE_URL}/forecast?q=${city}&units=metric&appid=${API_KEY}`
   );

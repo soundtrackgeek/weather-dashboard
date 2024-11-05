@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { WeatherData, getWeather, getForecast } from './services/weatherApi';
+import { WeatherData, ForecastData, getWeather, getForecast } from './services/weatherApi';
 import './App.css';
 
 const App: React.FC = () => {
   const [city, setCity] = useState('');
   const [currentWeather, setCurrentWeather] = useState<WeatherData | null>(null);
-  const [forecast, setForecast] = useState<any>(null);
+  const [forecast, setForecast] = useState<ForecastData | null>(null);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,6 +17,19 @@ const App: React.FC = () => {
     } catch (error) {
       console.error('Error fetching weather data:', error);
     }
+  };
+
+  const getDailyForecast = (forecastData: ForecastData) => {
+    const dailyData = new Map();
+    
+    forecastData.list.forEach((item) => {
+      const date = item.dt_txt.split(' ')[0];
+      if (!dailyData.has(date)) {
+        dailyData.set(date, item);
+      }
+    });
+
+    return Array.from(dailyData.values()).slice(1, 6); // Get next 5 days
   };
 
   return (
@@ -48,7 +61,20 @@ const App: React.FC = () => {
 
       {forecast && (
         <div className="forecast">
-          {/* Add 5-day forecast display logic here */}
+          <h2>5-Day Forecast</h2>
+          <div className="forecast-container">
+            {getDailyForecast(forecast).map((item) => (
+              <div key={item.dt} className="forecast-item">
+                <h3>{new Date(item.dt * 1000).toLocaleDateString('en-US', { weekday: 'short' })}</h3>
+                <img
+                  src={`http://openweathermap.org/img/w/${item.weather[0].icon}.png`}
+                  alt={item.weather[0].description}
+                />
+                <p>Temp: {Math.round(item.main.temp)}°C</p>
+                <p>Humidity: {item.main.humidity}%</p>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
