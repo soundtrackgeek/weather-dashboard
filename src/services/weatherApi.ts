@@ -1,6 +1,9 @@
 import axios from 'axios';
+import dotenv from 'dotenv';
 
-const API_KEY = 'YOUR_API_KEY'; // Get from openweathermap.org
+dotenv.config();
+
+const API_KEY = process.env.REACT_APP_API_KEY; // Get from .env file
 const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 
 export interface WeatherData {
